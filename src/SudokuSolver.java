@@ -25,6 +25,7 @@ public class SudokuSolver implements TileChangeListener {
         initializeBoard();
         fillBoard(0, 0);
         removeHints();
+        resetTries();
     }
 
     public void initializeBoard() {
@@ -260,9 +261,36 @@ public class SudokuSolver implements TileChangeListener {
         }
     }
 
+    public void resetTries() {
+        if (board == null || board.length < 1) return;
+
+        for (Tile[] tiles : board) {
+            for (Tile tile : tiles) {
+                if (tile == null) continue;
+                tile.moves = 0;
+            }
+        }
+    }
+
+    public int getTotalMoves() {
+        if (board == null || board.length < 1) return 0;
+
+        int totalMoves = 0;
+
+        for (Tile[] tiles : board) {
+            for (Tile tile : tiles) {
+                if (tile == null) continue;
+                totalMoves += tile.moves;
+            }
+        }
+
+        return totalMoves;
+    }
+
     @Override
     public void onTileUpdated(Tile tile) {
         validateBoard();
+        System.out.println(getTotalMoves());
     }
 
     public Tile[][] getBoard() {

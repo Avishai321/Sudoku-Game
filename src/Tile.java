@@ -13,6 +13,8 @@ public class Tile extends JPanel {
     public int col;
     public int box;
 
+    public int moves;
+
     public static final String POS_DIGITS = "123456789";
     private final JTextField textField;
 
@@ -28,7 +30,6 @@ public class Tile extends JPanel {
 
     public final Font hintFont = new Font("Arial", Font.BOLD, 32);
     public final Font editableFont = new Font("Tahoma", Font.PLAIN, 32);
-
 
     public Tile(boolean hint, int row, int col, TileChangeListener listener) {
         this.hint = hint;
@@ -53,7 +54,6 @@ public class Tile extends JPanel {
             @Override
             public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs)
                     throws BadLocationException {
-
                 if (text == null) {
                     fb.replace(offset, length, null, attrs);
                     return;
@@ -62,6 +62,7 @@ public class Tile extends JPanel {
                 // 0 will empty the cell
                 if (text.equals("0")) {
                     super.replace(fb, 0, fb.getDocument().getLength(), "", attrs);
+                    moves++;
                 }
 
                 // make sure it's only valid digits (1-9)
@@ -77,6 +78,8 @@ public class Tile extends JPanel {
                     char lastDigit = text.charAt(text.length() - 1);
                     super.replace(fb, 0, fb.getDocument().getLength(), String.valueOf(lastDigit), attrs);
                 }
+
+                moves++;
             }
         });
 

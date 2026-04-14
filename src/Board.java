@@ -7,7 +7,7 @@ public class Board extends JPanel {
 
     // BORING STUFF HERE
     private final Color boxLineColor = new Color(50, 50, 50);
-    private final BasicStroke boxStroke = new BasicStroke(2.5f);
+    private final BasicStroke boxStroke = new BasicStroke(1.8f);
 
     public Board(int boardSize, int hints) {
         BOARD_SIZE = boardSize;
@@ -35,15 +35,13 @@ public class Board extends JPanel {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        for (int i = 0; i <= 9; i++) {
-            // boxes border
-            if (i % 3 == 0) {
-                g2d.setColor(boxLineColor);
-                g2d.setStroke(boxStroke);
+        // painting boxes borders
+        for (int i = 0; i < 4; i++) {
+            g2d.setColor(boxLineColor);
+            g2d.setStroke(boxStroke); // border width, available only with g2d
 
-                g2d.drawLine(i * TILE_SIZE, 0, i * TILE_SIZE, BOARD_SIZE);
-                g2d.drawLine(0, i * TILE_SIZE, BOARD_SIZE, i * TILE_SIZE);
-            }
+            g2d.drawLine(0, i * TILE_SIZE * 3, BOARD_SIZE, i * TILE_SIZE * 3); // row
+            g2d.drawLine(i * TILE_SIZE * 3, 0, i * TILE_SIZE * 3, BOARD_SIZE); // col
         }
     }
 }
