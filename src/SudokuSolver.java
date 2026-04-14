@@ -1,11 +1,12 @@
+import java.util.Arrays;
 import java.util.Random;
 
 public class SudokuSolver implements TileChangeListener {
     private Tile[][] board;
 
-    private boolean[] rowsCollisions = new boolean[9];
-    private boolean[] colsCollisions = new boolean[9];
-    private boolean[] boxesCollisions = new boolean[9];
+    private final boolean[] rowsCollisions = new boolean[9];
+    private final boolean[] colsCollisions = new boolean[9];
+    private final boolean[] boxesCollisions = new boolean[9];
 
     private final int hints;
     private final int[] randomHints = new int[81];
@@ -224,9 +225,9 @@ public class SudokuSolver implements TileChangeListener {
 
     public void validateBoard() {
         // reset collisions
-        rowsCollisions = new boolean[9];
-        colsCollisions = new boolean[9];
-        boxesCollisions = new boolean[9];
+        Arrays.fill(rowsCollisions, false); // seems faster than rowsCollisions = new boolean[9]
+        Arrays.fill(colsCollisions, false);
+        Arrays.fill(boxesCollisions, false);
 
 
         int emptyTiles = 0;
@@ -290,7 +291,6 @@ public class SudokuSolver implements TileChangeListener {
     @Override
     public void onTileUpdated(Tile tile) {
         validateBoard();
-        System.out.println(getTotalMoves());
     }
 
     public Tile[][] getBoard() {
