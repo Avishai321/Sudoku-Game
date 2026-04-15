@@ -1,6 +1,4 @@
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
@@ -8,6 +6,7 @@ import javax.swing.text.DocumentFilter;
 import java.awt.*;
 
 public class Tile extends JPanel {
+    //TODO should all the fields be private instead of public?
     public boolean hint;
     public int row;
     public int col;
@@ -80,6 +79,7 @@ public class Tile extends JPanel {
                 }
 
                 moves++;
+                listener.onTileUpdated(Tile.this);
             }
         });
 
@@ -90,24 +90,6 @@ public class Tile extends JPanel {
         // in order to just listen to the press, use: FocusListener, which has the methods focusGained() and focusLost()
         textField.addActionListener(e -> {
             System.out.println("Enter hitted");
-        });
-
-        // detect changes in the textField and send the signal to the listener
-        this.textField.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                listener.onTileUpdated(Tile.this);
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                listener.onTileUpdated(Tile.this);
-            }
-
-            // it seems that it captures things like font changes, not anything useful
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-            }
         });
 
         add(textField);

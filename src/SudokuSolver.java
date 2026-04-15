@@ -26,6 +26,7 @@ public class SudokuSolver implements TileChangeListener {
         initializeBoard();
         fillBoard(0, 0);
         removeHints();
+
         resetTries();
     }
 
@@ -107,9 +108,9 @@ public class SudokuSolver implements TileChangeListener {
     }
 
     // another recursive method, it updates the possibleSolutions variable
-    public void updateSolutions(int row, int col, int solutionsToFind) {
+    public void updateSolutions(int row, int col, int maxSolutionsToFind) {
         // stop early if enough solutions already found
-        if (possibleSolutions > solutionsToFind) return;
+        if (possibleSolutions >= maxSolutionsToFind) return;
 
         // if row got to 9, the board finished and valid, then it's a possibleSolution
         if (row == 9) {
@@ -124,7 +125,7 @@ public class SudokuSolver implements TileChangeListener {
         Tile currentTile = board[row][col];
 
         if (currentTile.isHint()) { // skip the tile if it's a hint
-            updateSolutions(nextRow, nextCol, solutionsToFind);
+            updateSolutions(nextRow, nextCol, maxSolutionsToFind);
             return;
         }
 
@@ -134,7 +135,7 @@ public class SudokuSolver implements TileChangeListener {
                 // it's a valid move, use it and move forward to the next tile
                 currentTile.setValue(val);
 
-                updateSolutions(nextRow, nextCol, solutionsToFind);
+                updateSolutions(nextRow, nextCol, maxSolutionsToFind);
 
                 currentTile.setValue(0); // reset the value back to leave the board clean
             }
@@ -164,7 +165,7 @@ public class SudokuSolver implements TileChangeListener {
             tile.setValue(0); // removes it's value
 
             possibleSolutions = 0;
-            updateSolutions(0, 0, 1);
+            updateSolutions(0, 0, 2);
 
             if (possibleSolutions == 1) {
                 currentHints--;
@@ -225,7 +226,7 @@ public class SudokuSolver implements TileChangeListener {
 
     public void validateBoard() {
         // reset collisions
-        Arrays.fill(rowsCollisions, false); // seems faster than rowsCollisions = new boolean[9]
+        Arrays.fill(rowsCollisions, false);
         Arrays.fill(colsCollisions, false);
         Arrays.fill(boxesCollisions, false);
 
@@ -271,26 +272,14 @@ public class SudokuSolver implements TileChangeListener {
                 tile.moves = 0;
             }
         }
-    }
 
-    public int getTotalMoves() {
-        if (board == null || board.length < 1) return 0;
-
-        int totalMoves = 0;
-
-        for (Tile[] tiles : board) {
-            for (Tile tile : tiles) {
-                if (tile == null) continue;
-                totalMoves += tile.moves;
-            }
-        }
-
-        return totalMoves;
+        ControlPanel.resetMoves();
     }
 
     @Override
     public void onTileUpdated(Tile tile) {
         validateBoard();
+        ControlPanel.increaseMoves();
     }
 
     public Tile[][] getBoard() {
