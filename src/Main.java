@@ -19,6 +19,9 @@ public class Main {
         ControlPanel controlPanel = new ControlPanel(BOARD_SIZE, CONTROL_HEIGHT, sudokuSolver);
         frame.add(controlPanel, BorderLayout.NORTH);
 
+        sudokuSolver.setOnMoveMadeCallback(controlPanel::increaseMoves);
+        sudokuSolver.setOnResetCallback(controlPanel::resetMoves);
+
         Board board = new Board(BOARD_SIZE, sudokuSolver);
         frame.add(board, BorderLayout.CENTER);
 

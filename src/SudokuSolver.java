@@ -14,6 +14,9 @@ public class SudokuSolver implements TileChangeListener {
 
     private int possibleSolutions = 0;
 
+    private Runnable onMoveMadeCallback;
+    private Runnable onResetCallback;
+
     // GARBAGE
     private final Random random = new Random();
 
@@ -343,7 +346,9 @@ public class SudokuSolver implements TileChangeListener {
             }
         }
 
-        ControlPanel.resetMoves();
+        if (onResetCallback != null) {
+            onResetCallback.run();
+        }
     }
 
     @Override
@@ -351,9 +356,12 @@ public class SudokuSolver implements TileChangeListener {
         validateBoard();
 
         if (countAsMove) {
-            ControlPanel.increaseMoves();
+            if (onMoveMadeCallback != null) onMoveMadeCallback.run();
         }
     }
+
+    public void setOnMoveMadeCallback(Runnable onMoveMadeCallback) {this.onMoveMadeCallback = onMoveMadeCallback;}
+    public void setOnResetCallback(Runnable onResetCallback) {this.onResetCallback = onResetCallback;}
 
     public Tile[][] getBoard() {
         return board;
