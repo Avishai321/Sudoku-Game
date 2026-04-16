@@ -88,15 +88,6 @@ public class Tile extends JPanel {
             }
         });
 
-        //TODO it captures presses of the Enter key, find a useful thing to do with it
-        // note: to capture the Tab key there is need to take it from the operating system or just listen to it
-        // in order to steal it from the OS, use: textField.setFocusTraversalKeysEnabled(false);
-        //     after that, it's possible to use KeyListener and compare to KeyEvent.VK_TAB
-        // in order to just listen to the press, use: FocusListener, which has the methods focusGained() and focusLost()
-        textField.addActionListener(e -> {
-            System.out.println("Enter hitted");
-        });
-
         add(textField);
     }
 
