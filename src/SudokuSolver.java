@@ -277,9 +277,12 @@ public class SudokuSolver implements TileChangeListener {
     }
 
     @Override
-    public void onTileUpdated(Tile tile) {
+    public void onTileUpdated(Tile tile, boolean countAsMove) {
         validateBoard();
-        ControlPanel.increaseMoves();
+
+        if (countAsMove) {
+            ControlPanel.increaseMoves();
+        }
     }
 
     public Tile[][] getBoard() {

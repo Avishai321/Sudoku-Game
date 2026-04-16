@@ -62,6 +62,7 @@ public class Tile extends JPanel {
                 if (text.equals("0")) {
                     super.replace(fb, 0, fb.getDocument().getLength(), "", attrs);
                     moves++;
+                    listener.onTileUpdated(Tile.this, false);
                 }
 
                 // make sure it's only valid digits (1-9)
@@ -79,7 +80,7 @@ public class Tile extends JPanel {
                 }
 
                 moves++;
-                listener.onTileUpdated(Tile.this);
+                listener.onTileUpdated(Tile.this, true);
             }
         });
 
