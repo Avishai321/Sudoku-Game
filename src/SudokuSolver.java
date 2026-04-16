@@ -1,3 +1,4 @@
+import javax.swing.*;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -89,22 +90,90 @@ public class SudokuSolver implements TileChangeListener {
 
     // check if a move is safe BEFORE changing the tile's value
     public boolean isValidMove(int row, int col, int value) {
-        // check the tile's row and col
         for (int i = 0; i < 9; i++) {
             if (board[row][i].hasDigit() && board[row][i].getValue() == value) return false; // row
             if (board[i][col].hasDigit() && board[i][col].getValue() == value) return false; // col
         }
 
-        // check box
         int startRow = (row / 3) * 3;
         int startCol = (col / 3) * 3;
         for (int r = startRow; r < startRow + 3; r++) {
             for (int c = startCol; c < startCol + 3; c++) {
-                if (board[r][c].hasDigit() && board[r][c].getValue() == value) return false;
+                if (board[r][c].hasDigit() && board[r][c].getValue() == value) return false; // box
             }
         }
 
         return true;
+    }
+
+    // returns the next editable tile, or null if no next editable found, place null as current tile to start from (0,0)
+    public Tile getNextEditable(Tile currentTile) {
+        int row = (currentTile == null) ? 0 : (currentTile.col == 8) ? currentTile.row + 1 : currentTile.row;
+        int col = (currentTile == null || currentTile.col == 8) ? 0 :  currentTile.col + 1;
+
+        for (int r = row; r < board.length; r++) {
+            for (int c = col; c < board[0].length; c++) {
+                Tile nextTile = board[r][c];
+                if (!nextTile.isHint()) {
+                    return nextTile;
+                }
+                col = 0; // making sure the next row starts from col 0
+            }
+        }
+        return null;
+    }
+
+    // set all editable tiles values to 0 (empty)
+    public void resetBoard() {
+        for (Tile[] tiles : board) {
+            for (Tile tile : tiles) {
+                if (!tile.isHint()) tile.setValue(0);
+            }
+        }
+    }
+
+    // removes or gives focus for all editable tiles
+    public void setTilesFocusable(boolean focusable) {
+        for (Tile[] tiles : board) {
+            for (Tile tile : tiles) {
+                if (!tile.isHint()) tile.setTextFocusable(focusable);
+            }
+        }
+    }
+
+    public boolean autoSolveHelper(Tile tile, int delay) {
+        if (tile == null) return true;
+
+        for (int val = 1; val <= 9; val++) {
+            tile.setValue(val);
+
+            try {
+                Thread.sleep(delay);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+
+            if (isValidBoard()) {
+                boolean hasSolution = autoSolveHelper(getNextEditable(tile), delay);
+                if (hasSolution) return true;
+            }
+
+            tile.setValue(0);
+        }
+
+        return false;
+    }
+
+    public void autoSolve(int delay, JButton button) {
+        resetBoard();
+
+        setTilesFocusable(false);
+        button.setEnabled(false);
+
+        autoSolveHelper(getNextEditable(null), delay);
+
+        setTilesFocusable(true);
+        button.setEnabled(true);
     }
 
     // another recursive method, it updates the possibleSolutions variable
@@ -238,7 +307,7 @@ public class SudokuSolver implements TileChangeListener {
                 if (tile == null) continue;
 
                 //TODO think about that:
-                //if (!tile.isEditable()) continue;
+                //if (tile.isHint()) continue;
 
                 if (tile.hasDigit()) updateCollisions(tile);
                 else emptyTiles++;

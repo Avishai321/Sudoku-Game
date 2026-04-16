@@ -9,7 +9,7 @@ public class Board extends JPanel {
     private final Color boxLineColor = new Color(50, 50, 50);
     private final BasicStroke boxStroke = new BasicStroke(1.8f);
 
-    public Board(int boardSize, int hints) {
+    public Board(int boardSize, SudokuSolver solver) {
         BOARD_SIZE = boardSize;
         TILE_SIZE = BOARD_SIZE / 9;
 
@@ -17,10 +17,8 @@ public class Board extends JPanel {
         setLayout(new GridLayout(9, 9, 2, 2));
         setBackground(new Color(214, 214, 214));
 
-        SudokuSolver sudokuSolver = new SudokuSolver(hints);
-
         // add all tiles to the panel's grid
-        Tile[][] board = sudokuSolver.getBoard();
+        Tile[][] board = solver.getBoard();
         for (Tile[] tiles : board) {
             for (int c = 0; c < board[0].length; c++) {
                 add(tiles[c]);

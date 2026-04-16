@@ -63,6 +63,11 @@ public class Tile extends JPanel {
                     super.replace(fb, 0, fb.getDocument().getLength(), "", attrs);
                     moves++;
                     listener.onTileUpdated(Tile.this, false);
+                    return;
+                }
+
+                if (text.equals(textField.getText())) {
+                    return; // don't count overriding as a move
                 }
 
                 // make sure it's only valid digits (1-9)
@@ -136,4 +141,12 @@ public class Tile extends JPanel {
         return Integer.parseInt(this.textField.getText());
     }
 
+    public void setTextFocusable(boolean focusable) {
+        this.textField.setFocusable(focusable);
+    }
+
+    @Override
+    public String toString() {
+        return "(" + this.row + "," + this.col + ")";
+    }
 }
