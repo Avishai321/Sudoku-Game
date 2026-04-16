@@ -108,8 +108,9 @@ public class SudokuSolver implements TileChangeListener {
 
     // returns the next editable tile, or null if no next editable found, place null as current tile to start from (0,0)
     public Tile getNextEditable(Tile currentTile) {
-        int row = (currentTile == null) ? 0 : (currentTile.col == 8) ? currentTile.row + 1 : currentTile.row;
-        int col = (currentTile == null || currentTile.col == 8) ? 0 :  currentTile.col + 1;
+        int row = (currentTile == null) ?
+                0 : (currentTile.getCol() == 8) ? currentTile.getRow() + 1 : currentTile.getRow();
+        int col = (currentTile == null || currentTile.getCol() == 8) ? 0 :  currentTile.getCol() + 1;
 
         for (int r = row; r < board.length; r++) {
             for (int c = col; c < board[0].length; c++) {
@@ -230,7 +231,7 @@ public class SudokuSolver implements TileChangeListener {
             Tile tile = board[row][col];
             int value = tile.getValue();
 
-            tile.setAsHint(false);
+            tile.setHint(false);
             tile.setValue(0); // removes it's value
 
             possibleSolutions = 0;
@@ -241,7 +242,7 @@ public class SudokuSolver implements TileChangeListener {
             }
             else {
                 // revert changes
-                tile.setAsHint(true);
+                tile.setHint(true);
                 tile.setValue(value);
             }
         }
@@ -262,31 +263,31 @@ public class SudokuSolver implements TileChangeListener {
 
         // check row
         for (int c = 0; c < 9; c++) {
-            Tile other = board[tile.row][c];
+            Tile other = board[tile.getRow()][c];
             if (other.hasDigit() && other != tile && other.getValue() == val) {
-                rowsCollisions[tile.row] = true;
+                rowsCollisions[tile.getRow()] = true;
                 break; // there is no need to check for more collisions in the same row
             }
         }
 
         // check column
         for (int r = 0; r < 9; r++) {
-            Tile other = board[r][tile.col];
+            Tile other = board[r][tile.getCol()];
             if (other.hasDigit() && other != tile && other.getValue() == val) {
-                colsCollisions[tile.col] = true;
+                colsCollisions[tile.getCol()] = true;
                 break;
             }
         }
 
         // check box
-        int startRow = (tile.row / 3) * 3;
-        int startCol = (tile.col / 3) * 3;
+        int startRow = (tile.getRow() / 3) * 3;
+        int startCol = (tile.getCol() / 3) * 3;
 
         boxCheck: for (int r = startRow; r < startRow + 3; r++) {
             for (int c = startCol; c < startCol + 3; c++) {
                 Tile other = board[r][c];
                 if (other.hasDigit() && other != tile && other.getValue() == val) {
-                    boxesCollisions[tile.box] = true;
+                    boxesCollisions[tile.getBox()] = true;
                     break boxCheck;
                 }
             }
@@ -325,7 +326,7 @@ public class SudokuSolver implements TileChangeListener {
                 if (solved) tile.setHighlight(Tile.successColor);
 
                 else {
-                    boolean hasError = rowsCollisions[r] || colsCollisions[c] || boxesCollisions[tile.box];
+                    boolean hasError = rowsCollisions[r] || colsCollisions[c] || boxesCollisions[tile.getBox()];
                     tile.setHighlight((hasError) ? Tile.errorColor : null);
                 }
             }

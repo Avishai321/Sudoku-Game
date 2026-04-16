@@ -7,10 +7,10 @@ import java.awt.*;
 
 public class Tile extends JPanel {
     //TODO should all the fields be private instead of public?
-    public boolean hint;
-    public int row;
-    public int col;
-    public int box;
+    private boolean hint;
+    private final int row;
+    private final int col;
+    private final int box;
 
     public int moves;
 
@@ -45,7 +45,7 @@ public class Tile extends JPanel {
         textField.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         textField.setPreferredSize(new Dimension(Board.TILE_SIZE, Board.TILE_SIZE));
         textField.setHorizontalAlignment(JTextField.CENTER);
-        setAsHint(this.hint);
+        setHint(this.hint);
 
         // limit the text field to only one digit and more features
         AbstractDocument doc = (AbstractDocument) textField.getDocument();
@@ -101,7 +101,27 @@ public class Tile extends JPanel {
         add(textField);
     }
 
-    public void setAsHint(boolean hint) {
+    public int getRow() {
+        return row;
+    }
+
+    public int getCol() {
+        return col;
+    }
+
+    public int getBox() {
+        return box;
+    }
+
+    public int getMoves() {
+        return moves;
+    }
+
+    public void setMoves(int moves) {
+        this.moves = moves;
+    }
+
+    public void setHint(boolean hint) {
         this.hint = hint;
         if (this.hint) {
             textField.setEditable(false);
