@@ -17,7 +17,7 @@ public class Tile extends JPanel {
     public static final String POS_DIGITS = "123456789";
     private final JTextField textField;
 
-    // BORING STUFF HERE
+    // COLORS AND DESIGN
     private final Color editableBackground = new Color(255, 255, 255);
     private final Color hintBackground = new Color(166, 166, 166);
 

@@ -10,8 +10,6 @@ public class ControlPanel extends JPanel {
 
     private static final JButton resetBoardButton = new JButton("Reset Board");
 
-    //TODO add a reset button, and a reset method in SudokuSolver to activate, it should reset all tiles to 0
-
     public ControlPanel(int width, int height, SudokuSolver solver) {
         setPreferredSize(new Dimension(width, height));
         setLayout(new GridLayout(1, 2));
@@ -22,6 +20,8 @@ public class ControlPanel extends JPanel {
         autoSolveButton.addActionListener(e -> {
             //TODO turn this button to a cancel button while the solver is working
             // currently the solver makes sure to diable and enable the button
+
+            //TODO disable resetBoard button as well when auto solving
 
             Thread autoSolveThread = new Thread(() -> {
                 solver.autoSolve(AUTO_SOLVE_DELAY, autoSolveButton);
@@ -45,11 +45,6 @@ public class ControlPanel extends JPanel {
 
     public static void increaseMoves() {
         moves++;
-        updateLabel();
-    }
-
-    public static void setMoves(int x) {
-        moves = x;
         updateLabel();
     }
 
