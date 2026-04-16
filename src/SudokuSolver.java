@@ -360,10 +360,14 @@ public class SudokuSolver implements TileChangeListener {
         }
     }
 
-    public void setOnMoveMadeCallback(Runnable onMoveMadeCallback) {this.onMoveMadeCallback = onMoveMadeCallback;}
-    public void setOnResetCallback(Runnable onResetCallback) {this.onResetCallback = onResetCallback;}
-
     public Tile[][] getBoard() {
         return board;
+    }
+
+    public void setOnMoveMadeCallback(Runnable onMoveMadeCallback) {
+        this.onMoveMadeCallback = onMoveMadeCallback;
+    }
+    public void setOnResetCallback(Runnable onResetCallback) {
+        this.onResetCallback = onResetCallback;
     }
 }

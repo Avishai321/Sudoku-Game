@@ -6,7 +6,6 @@ import javax.swing.text.DocumentFilter;
 import java.awt.*;
 
 public class Tile extends JPanel {
-    //TODO should all the fields be private instead of public?
     private boolean hint;
     private final int row;
     private final int col;
