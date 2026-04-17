@@ -16,7 +16,7 @@ public class ControlPanel extends JPanel {
     public ControlPanel(int width, int height) {
         setPreferredSize(new Dimension(width, height));
 
-        setLayout(new GridLayout(1, 2));
+        setLayout(new GridLayout(1, 4));
 
         movesLabel.setHorizontalAlignment(JLabel.CENTER);
         add(movesLabel);
