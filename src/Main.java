@@ -24,7 +24,7 @@ public class Main {
 
         sudokuSolver.setOnMoveMadeCallback(controlPanel::increaseMoves);
         sudokuSolver.setOnResetCallback(controlPanel::resetMoves);
-        sudokuSolver.setOnAutoSolveDone(controlPanel::enableButtons);
+        sudokuSolver.setOnAutoSolveDoneCallback(controlPanel::enableButtons);
 
         controlPanel.setAutoSolveCallable(() -> sudokuSolver.autoSolve(AUTO_SOLVE_DELAY));
         controlPanel.setResetBoardCallable(sudokuSolver::resetBoard);

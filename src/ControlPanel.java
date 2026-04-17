@@ -30,17 +30,16 @@ public class ControlPanel extends JPanel {
         });
         add(resetBoardButton);
 
-        //TODO fix functionality and use SwingUtilities.invokeLater() when changing ui
         JLabel timeLabel = new JLabel("00:00");
         timeLabel.setHorizontalAlignment(JLabel.CENTER);
         LocalTime startTime = LocalTime.now();
 
         Timer timer = new Timer(1000, e -> {
             Duration duration = Duration.between(startTime, LocalTime.now());
-            long totalSeconds = duration.getSeconds();
+            int totalSeconds = (int) duration.getSeconds();
 
-            long mins = totalSeconds / 60;
-            long secs = totalSeconds % 60;
+            int mins = totalSeconds / 60;
+            int secs = totalSeconds % 60;
 
             timeLabel.setText(String.format("%02d", mins) + ":" + String.format("%02d", secs));
         });
@@ -66,14 +65,6 @@ public class ControlPanel extends JPanel {
         this.resetBoardButton.setEnabled(true);
     }
 
-    public void setAutoSolveCallable(Runnable autoSolveCallable) {
-        this.autoSolveCallable = autoSolveCallable;
-    }
-
-    public void setResetBoardCallable(Runnable resetBoardCallable) {
-        this.resetBoardCallable = resetBoardCallable;
-    }
-
     private void updateLabel() {
         movesLabel.setText("Moves " + moves);
     }
@@ -86,5 +77,12 @@ public class ControlPanel extends JPanel {
     public void resetMoves() {
         moves = 0;
         updateLabel();
+    }
+
+    public void setAutoSolveCallable(Runnable autoSolveCallable) {
+        this.autoSolveCallable = autoSolveCallable;
+    }
+    public void setResetBoardCallable(Runnable resetBoardCallable) {
+        this.resetBoardCallable = resetBoardCallable;
     }
 }
