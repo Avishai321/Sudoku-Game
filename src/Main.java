@@ -20,7 +20,6 @@ public class Main {
         ControlPanel controlPanel = new ControlPanel(BOARD_SIZE, CONTROL_HEIGHT);
         frame.add(controlPanel, BorderLayout.NORTH);
 
-
         sudokuSolver.setOnMoveMadeCallback(controlPanel::increaseMoves);
         sudokuSolver.setOnResetCallback(controlPanel::resetMoves);
         sudokuSolver.setOnAutoSolveDoneCallback(controlPanel::enableButtons);
@@ -32,7 +31,6 @@ public class Main {
         frame.add(board, BorderLayout.CENTER);
 
         frame.pack();
-
         frame.setLocationRelativeTo(null);
 
         frame.setVisible(true);
