@@ -11,28 +11,21 @@ public class SudokuSolver implements TileChangeListener {
 
     private final int hints;
     private final int[] randomHints = new int[81];
-
     private int possibleSolutions = 0;
 
     private Runnable onMoveMadeCallback;
     private Runnable onResetCallback;
     private Runnable onAutoSolveDoneCallback;
 
-    // GARBAGE
     private final Random random = new Random();
 
     public SudokuSolver(int hints) {
-        // WARNING lower number of hints will make the creation of the board slower
-        // this is because the solver ensures there is only one possible solution.
-        // 30 hints is a good balance, should take no time, but it's a bit easy to solve; about 6 minutes
-        // a good computer can take it easily to 25 hints, but it will take a few seconds, sometimes even more.
         this.hints = hints;
 
         initializeBoard();
         fillBoard(0, 0);
         removeHints();
-
-        resetTries();
+        resetStatistics();
     }
 
     public void initializeBoard() {
@@ -53,7 +46,7 @@ public class SudokuSolver implements TileChangeListener {
 
         Tile tile = board[row][col];
 
-        // create an array with random values to try
+        // simple int array with digits to try
         int[] digits = {1, 2, 3, 4, 5, 6, 7, 8, 9};
         shuffleArray(digits);
 
@@ -78,7 +71,7 @@ public class SudokuSolver implements TileChangeListener {
             tile.setValue(0);
         }
 
-        // can't place ANY digit without currpting the board, return a negative answer
+        // couldn't place ANY digit without currpting the board, return a negative answer
         return false;
     }
 
@@ -95,10 +88,11 @@ public class SudokuSolver implements TileChangeListener {
     // check if a move is safe BEFORE changing the tile's value
     public boolean isValidMove(int row, int col, int value) {
         for (int i = 0; i < 9; i++) {
-            if (board[row][i].hasDigit() && board[row][i].getValue() == value) return false; // row
-            if (board[i][col].hasDigit() && board[i][col].getValue() == value) return false; // col
+            if (i != col && board[row][i].hasDigit() && board[row][i].getValue() == value) return false; // row
+            if (i != row && board[i][col].hasDigit() && board[i][col].getValue() == value) return false; // col
         }
 
+        // calculate the tile's box area
         int startRow = (row / 3) * 3;
         int startCol = (col / 3) * 3;
         for (int r = startRow; r < startRow + 3; r++) {
@@ -110,7 +104,7 @@ public class SudokuSolver implements TileChangeListener {
         return true;
     }
 
-    // returns the next editable tile, or null if no next editable found, place null as current tile to start from (0,0)
+    // get the next editable tile by the current one (null to start from 0,0), returns null if no nextEditable found
     public Tile getNextEditable(Tile currentTile) {
         int row = (currentTile == null) ?
                 0 : (currentTile.getCol() == 8) ? currentTile.getRow() + 1 : currentTile.getRow();
@@ -147,10 +141,11 @@ public class SudokuSolver implements TileChangeListener {
     }
 
     public boolean autoSolveHelper(Tile tile, int delay) {
-        // THIS METHOD RUNS ON A DIFFERENT THREAD, MAKE SURE IT'S SAFE (with setValueSafe())
+        // THIS METHOD RUNS ON A DIFFERENT THREAD, MAKE SURE YOUT KEEP IT SAFE (with setValueSafe())
         if (tile == null) return true;
 
         for (int val = 1; val <= 9; val++) {
+            // setValueSafe() is a bit slow for it waits until SwingUtilities will set the value to the tile
             tile.setValueSafe(val);
 
             try {
@@ -176,13 +171,13 @@ public class SudokuSolver implements TileChangeListener {
 
         new Thread(() -> {
             autoSolveHelper(getNextEditable(null), delay);
+
             SwingUtilities.invokeLater(() -> {
                 setTilesFocusable(true);
                 if (onAutoSolveDoneCallback != null) onAutoSolveDoneCallback.run();
             });
+
         }).start();
-
-
     }
 
     // another recursive method, it updates the possibleSolutions variable
@@ -196,13 +191,12 @@ public class SudokuSolver implements TileChangeListener {
             return;
         }
 
-        // calculate next tile's row and col
         int nextRow = (col == 8) ? row + 1 : row;
         int nextCol = (col == 8) ? 0 : col + 1;
 
         Tile currentTile = board[row][col];
 
-        if (currentTile.isHint()) { // skip the tile if it's a hint
+        if (currentTile.isHint()) { // skip the tile if it's a hint and move to the next one
             updateSolutions(nextRow, nextCol, maxSolutionsToFind);
             return;
         }
@@ -315,9 +309,6 @@ public class SudokuSolver implements TileChangeListener {
             for (Tile tile : tiles) {
                 if (tile == null) continue;
 
-                //TODO think about that:
-                //if (tile.isHint()) continue;
-
                 if (tile.hasDigit()) updateCollisions(tile);
                 else emptyTiles++;
             }
@@ -331,23 +322,23 @@ public class SudokuSolver implements TileChangeListener {
                 Tile tile = board[r][c];
                 if (tile == null) continue;
 
-                if (solved) tile.setHighlight(Tile.successColor);
+                if (solved) tile.highlight(Tile.successColor);
 
                 else {
                     boolean hasError = rowsCollisions[r] || colsCollisions[c] || boxesCollisions[tile.getBox()];
-                    tile.setHighlight((hasError) ? Tile.errorColor : null);
+                    tile.highlight((hasError) ? Tile.errorColor : null);
                 }
             }
         }
     }
 
-    public void resetTries() {
+    public void resetStatistics() {
         if (board == null || board.length < 1) return;
 
         for (Tile[] tiles : board) {
             for (Tile tile : tiles) {
                 if (tile == null) continue;
-                tile.moves = 0;
+                tile.setMoves(0);
             }
         }
 

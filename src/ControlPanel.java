@@ -6,9 +6,9 @@ import java.time.LocalTime;
 public class ControlPanel extends JPanel {
     private int moves = 0;
     private final JLabel movesLabel = new JLabel("Moves: 0");
-
-    private final JButton resetBoardButton = new JButton("Reset Board");
-    private final JButton autoSolveButton;
+    private final JButton autoSolveButton = getAutoSolveButton();
+    private final JButton resetBoardButton = getResetBoardButton();
+    private final JLabel timeLabel = new JLabel("00:00");
 
     private Runnable autoSolveCallable;
     private Runnable resetBoardCallable;
@@ -21,35 +21,19 @@ public class ControlPanel extends JPanel {
         movesLabel.setHorizontalAlignment(JLabel.CENTER);
         add(movesLabel);
 
-        autoSolveButton = getAutoSolveButton();
         add(autoSolveButton);
-
-        resetBoardButton.setFocusable(false);
-        resetBoardButton.addActionListener(e -> {
-            if (resetBoardCallable != null) resetBoardCallable.run();
-        });
         add(resetBoardButton);
 
-        JLabel timeLabel = new JLabel("00:00");
         timeLabel.setHorizontalAlignment(JLabel.CENTER);
-        LocalTime startTime = LocalTime.now();
-
-        Timer timer = new Timer(1000, e -> {
-            Duration duration = Duration.between(startTime, LocalTime.now());
-            int totalSeconds = (int) duration.getSeconds();
-
-            int mins = totalSeconds / 60;
-            int secs = totalSeconds % 60;
-
-            timeLabel.setText(String.format("%02d", mins) + ":" + String.format("%02d", secs));
-        });
-        timer.start();
         add(timeLabel);
+
+        initTimer();
     }
 
     private JButton getAutoSolveButton() {
         JButton autoSolveButton = new JButton("Auto Solve");
         autoSolveButton.setFocusable(false);
+
         autoSolveButton.addActionListener(e -> {
             autoSolveButton.setEnabled(false);
             resetBoardButton.setEnabled(false);
@@ -60,23 +44,48 @@ public class ControlPanel extends JPanel {
         return autoSolveButton;
     }
 
+    public JButton getResetBoardButton() {
+        JButton resetBoardButton = new JButton("Reset Board");
+        resetBoardButton.setFocusable(false);
+
+        resetBoardButton.addActionListener(e -> {
+            if (resetBoardCallable != null) resetBoardCallable.run();
+        });
+
+        return resetBoardButton;
+    }
+
+    public void initTimer() {
+        LocalTime startTime = LocalTime.now();
+
+        new Timer(1000, e -> {
+            Duration duration = Duration.between(startTime, LocalTime.now());
+            int totalSeconds = (int) duration.getSeconds();
+
+            int mins = totalSeconds / 60;
+            int secs = totalSeconds % 60;
+
+            timeLabel.setText(String.format("%02d:%02d", mins, secs));
+        }).start();
+    }
+
     public void enableButtons() {
         this.autoSolveButton.setEnabled(true);
         this.resetBoardButton.setEnabled(true);
     }
 
-    private void updateLabel() {
+    private void updateMovesLabel() {
         movesLabel.setText("Moves " + moves);
     }
 
     public void increaseMoves() {
         moves++;
-        updateLabel();
+        updateMovesLabel();
     }
 
     public void resetMoves() {
         moves = 0;
-        updateLabel();
+        updateMovesLabel();
     }
 
     public void setAutoSolveCallable(Runnable autoSolveCallable) {

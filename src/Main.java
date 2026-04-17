@@ -3,10 +3,9 @@ import java.awt.*;
 
 public class Main {
     public static void main(String[] args) {
-        final int BOARD_SIZE = 450;
+        final int BOARD_SIZE = 450; // RECOMMENDED 450, other values might break tiles borders
         final int HINTS = 35;
         final int CONTROL_HEIGHT = 25;
-
         final int AUTO_SOLVE_DELAY = 1;
 
         final JFrame frame = new JFrame();
@@ -29,7 +28,7 @@ public class Main {
         controlPanel.setAutoSolveCallable(() -> sudokuSolver.autoSolve(AUTO_SOLVE_DELAY));
         controlPanel.setResetBoardCallable(sudokuSolver::resetBoard);
 
-        Board board = new Board(BOARD_SIZE, sudokuSolver);
+        Board board = new Board(BOARD_SIZE, sudokuSolver.getBoard());
         frame.add(board, BorderLayout.CENTER);
 
         frame.pack();

@@ -11,7 +11,7 @@ public class Tile extends JPanel {
     private final int col;
     private final int box;
 
-    public int moves;
+    private int moves;
 
     public static final String POS_DIGITS = "123456789";
     private final JTextField textField;
@@ -26,8 +26,8 @@ public class Tile extends JPanel {
     public static final Color errorColor = new Color(255, 190, 190);
     public static final Color successColor = new Color(190, 255, 190);
 
-    public final Font hintFont = new Font("Arial", Font.BOLD, 32);
-    public final Font editableFont = new Font("Tahoma", Font.PLAIN, 32);
+    private final Font hintFont = new Font("Arial", Font.BOLD, 32);
+    private final Font editableFont = new Font("Tahoma", Font.PLAIN, 32);
 
     public Tile(boolean hint, int row, int col, TileChangeListener listener) {
         this.hint = hint;
@@ -94,19 +94,15 @@ public class Tile extends JPanel {
     public int getRow() {
         return row;
     }
-
     public int getCol() {
         return col;
     }
-
     public int getBox() {
         return box;
     }
-
     public int getMoves() {
         return moves;
     }
-
     public void setMoves(int moves) {
         this.moves = moves;
     }
@@ -129,7 +125,7 @@ public class Tile extends JPanel {
         }
     }
 
-    public void setHighlight(Color color) {
+    public void highlight(Color color) {
         // color null will restore the default color
         if (color == null) this.textField.setBackground(!this.hint ? editableBackground : hintBackground);
 
