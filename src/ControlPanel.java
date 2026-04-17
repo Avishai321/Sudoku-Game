@@ -1,56 +1,77 @@
 import javax.swing.*;
 import java.awt.*;
+import java.time.Duration;
+import java.time.LocalTime;
 
 public class ControlPanel extends JPanel {
-    private final SudokuSolver solver;
-
     private int moves = 0;
     private final JLabel movesLabel = new JLabel("Moves: 0");
 
-    private final int AUTO_SOLVE_DELAY = 1;
+    private final JButton resetBoardButton = new JButton("Reset Board");
+    private final JButton autoSolveButton;
 
-    public ControlPanel(int width, int height, SudokuSolver solver) {
+    private Runnable autoSolveCallable;
+    private Runnable resetBoardCallable;
+
+    public ControlPanel(int width, int height) {
         setPreferredSize(new Dimension(width, height));
-        this.solver = solver;
 
         setLayout(new GridLayout(1, 2));
 
+        movesLabel.setHorizontalAlignment(JLabel.CENTER);
         add(movesLabel);
 
-        JButton autoSolveButton = getAutoSolveButton();
+        autoSolveButton = getAutoSolveButton();
         add(autoSolveButton);
 
-        JButton resetBoardButton = getResetBoardButton();
+        resetBoardButton.setFocusable(false);
+        resetBoardButton.addActionListener(e -> {
+            if (resetBoardCallable != null) resetBoardCallable.run();
+        });
         add(resetBoardButton);
+
+        //TODO fix functionality and use SwingUtilities.invokeLater() when changing ui
+        JLabel timeLabel = new JLabel("00:00");
+        timeLabel.setHorizontalAlignment(JLabel.CENTER);
+        LocalTime startTime = LocalTime.now();
+
+        Timer timer = new Timer(1000, e -> {
+            Duration duration = Duration.between(startTime, LocalTime.now());
+            long totalSeconds = duration.getSeconds();
+
+            long mins = totalSeconds / 60;
+            long secs = totalSeconds % 60;
+
+            timeLabel.setText(String.format("%02d", mins) + ":" + String.format("%02d", secs));
+        });
+        timer.start();
+        add(timeLabel);
     }
 
     private JButton getAutoSolveButton() {
         JButton autoSolveButton = new JButton("Auto Solve");
         autoSolveButton.setFocusable(false);
         autoSolveButton.addActionListener(e -> {
-            //TODO turn this button to a cancel button while the solver is working
-            // currently the solver makes sure to diable and enable the button
+            autoSolveButton.setEnabled(false);
+            resetBoardButton.setEnabled(false);
 
-            //TODO disable resetBoard button as well when auto solving
-
-            Thread autoSolveThread = new Thread(() -> {
-                solver.autoSolve(AUTO_SOLVE_DELAY, autoSolveButton);
-            });
-            autoSolveThread.start();
+            if (autoSolveCallable != null) autoSolveCallable.run();
         });
 
         return autoSolveButton;
     }
 
-    private JButton getResetBoardButton() {
-        JButton resetBoardButton = new JButton("Reset Board");
+    public void enableButtons() {
+        this.autoSolveButton.setEnabled(true);
+        this.resetBoardButton.setEnabled(true);
+    }
 
-        resetBoardButton.setFocusable(false);
-        resetBoardButton.addActionListener(e -> {
-            solver.resetBoard();
-        });
+    public void setAutoSolveCallable(Runnable autoSolveCallable) {
+        this.autoSolveCallable = autoSolveCallable;
+    }
 
-        return resetBoardButton;
+    public void setResetBoardCallable(Runnable resetBoardCallable) {
+        this.resetBoardCallable = resetBoardCallable;
     }
 
     private void updateLabel() {

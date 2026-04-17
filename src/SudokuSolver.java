@@ -16,6 +16,7 @@ public class SudokuSolver implements TileChangeListener {
 
     private Runnable onMoveMadeCallback;
     private Runnable onResetCallback;
+    private Runnable onAutoSolveDone;
 
     // GARBAGE
     private final Random random = new Random();
@@ -168,16 +169,18 @@ public class SudokuSolver implements TileChangeListener {
         return false;
     }
 
-    public void autoSolve(int delay, JButton button) {
+    public void autoSolve(int delay) {
         resetBoard();
 
-        setTilesFocusable(false);
-        button.setEnabled(false);
+        //TODO make it thread safe
+        new Thread(() -> {
+            setTilesFocusable(false);
+             autoSolveHelper(getNextEditable(null), delay);
+            setTilesFocusable(true);
+            onAutoSolveDone.run();
+        }).start();
 
-        autoSolveHelper(getNextEditable(null), delay);
 
-        setTilesFocusable(true);
-        button.setEnabled(true);
     }
 
     // another recursive method, it updates the possibleSolutions variable
@@ -369,5 +372,8 @@ public class SudokuSolver implements TileChangeListener {
     }
     public void setOnResetCallback(Runnable onResetCallback) {
         this.onResetCallback = onResetCallback;
+    }
+    public void setOnAutoSolveDone(Runnable onAutoSolveDone) {
+        this.onAutoSolveDone = onAutoSolveDone;
     }
 }
