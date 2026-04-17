@@ -16,7 +16,7 @@ public class SudokuSolver implements TileChangeListener {
 
     private Runnable onMoveMadeCallback;
     private Runnable onResetCallback;
-    private Runnable onAutoSolveDone;
+    private Runnable onAutoSolveDoneCallback;
 
     // GARBAGE
     private final Random random = new Random();
@@ -147,10 +147,11 @@ public class SudokuSolver implements TileChangeListener {
     }
 
     public boolean autoSolveHelper(Tile tile, int delay) {
+        // THIS METHOD RUNS ON A DIFFERENT THREAD, MAKE SURE IT'S SAFE (with setValueSafe())
         if (tile == null) return true;
 
         for (int val = 1; val <= 9; val++) {
-            tile.setValue(val);
+            tile.setValueSafe(val);
 
             try {
                 Thread.sleep(delay);
@@ -163,7 +164,7 @@ public class SudokuSolver implements TileChangeListener {
                 if (hasSolution) return true;
             }
 
-            tile.setValue(0);
+            tile.setValueSafe(0);
         }
 
         return false;
@@ -171,13 +172,14 @@ public class SudokuSolver implements TileChangeListener {
 
     public void autoSolve(int delay) {
         resetBoard();
+        setTilesFocusable(false);
 
-        //TODO make it thread safe
         new Thread(() -> {
-            setTilesFocusable(false);
-             autoSolveHelper(getNextEditable(null), delay);
-            setTilesFocusable(true);
-            onAutoSolveDone.run();
+            autoSolveHelper(getNextEditable(null), delay);
+            SwingUtilities.invokeLater(() -> {
+                setTilesFocusable(true);
+                if (onAutoSolveDoneCallback != null) onAutoSolveDoneCallback.run();
+            });
         }).start();
 
 
@@ -373,7 +375,7 @@ public class SudokuSolver implements TileChangeListener {
     public void setOnResetCallback(Runnable onResetCallback) {
         this.onResetCallback = onResetCallback;
     }
-    public void setOnAutoSolveDone(Runnable onAutoSolveDone) {
-        this.onAutoSolveDone = onAutoSolveDone;
+    public void setOnAutoSolveDoneCallback(Runnable onAutoSolveDoneCallback) {
+        this.onAutoSolveDoneCallback = onAutoSolveDoneCallback;
     }
 }

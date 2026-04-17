@@ -140,6 +140,20 @@ public class Tile extends JPanel {
         this.textField.setText(String.valueOf(num));
     }
 
+    public void setValueSafe(int num) {
+        // prevent Deadlock
+        if (SwingUtilities.isEventDispatchThread()) {
+            setValue(num);
+            return;
+        }
+
+        try {
+            SwingUtilities.invokeAndWait(() -> setValue(num));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public boolean isHint() {return hint;}
 
     public boolean hasDigit() {
