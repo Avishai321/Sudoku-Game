@@ -13,6 +13,8 @@ public class ControlPanel extends JPanel {
     private Runnable autoSolveCallable;
     private Runnable resetBoardCallable;
 
+    LocalTime startTime;
+
     public ControlPanel(int width, int height) {
         setPreferredSize(new Dimension(width, height));
 
@@ -50,13 +52,14 @@ public class ControlPanel extends JPanel {
 
         resetBoardButton.addActionListener(e -> {
             if (resetBoardCallable != null) resetBoardCallable.run();
+            resetStates();
         });
 
         return resetBoardButton;
     }
 
     public void initTimer() {
-        LocalTime startTime = LocalTime.now();
+        startTime = LocalTime.now();
 
         new Timer(1000, e -> {
             Duration duration = Duration.between(startTime, LocalTime.now());
@@ -83,9 +86,10 @@ public class ControlPanel extends JPanel {
         updateMovesLabel();
     }
 
-    public void resetMoves() {
+    public void resetStates() {
         moves = 0;
         updateMovesLabel();
+        startTime = LocalTime.now();
     }
 
     public void setAutoSolveCallable(Runnable autoSolveCallable) {

@@ -21,7 +21,7 @@ public class Main {
         frame.add(controlPanel, BorderLayout.NORTH);
 
         sudokuSolver.setOnMoveMadeCallback(controlPanel::increaseMoves);
-        sudokuSolver.setOnResetCallback(controlPanel::resetMoves);
+        sudokuSolver.setOnResetCallback(controlPanel::resetStates);
         sudokuSolver.setOnAutoSolveDoneCallback(controlPanel::enableButtons);
 
         controlPanel.setAutoSolveCallable(() -> sudokuSolver.autoSolve(AUTO_SOLVE_DELAY));
