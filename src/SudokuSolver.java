@@ -3,6 +3,7 @@ import java.util.Arrays;
 import java.util.Random;
 
 public class SudokuSolver implements TileChangeListener {
+    //TODO modify this class to use logical data only instead of creating and changing ui which might take much longer
     private Tile[][] board;
 
     private final boolean[] rowsCollisions = new boolean[9];
@@ -92,12 +93,12 @@ public class SudokuSolver implements TileChangeListener {
             if (i != row && board[i][col].hasDigit() && board[i][col].getValue() == value) return false; // col
         }
 
-        // calculate the tile's box area
+        // box
         int startRow = (row / 3) * 3;
         int startCol = (col / 3) * 3;
         for (int r = startRow; r < startRow + 3; r++) {
             for (int c = startCol; c < startCol + 3; c++) {
-                if (board[r][c].hasDigit() && board[r][c].getValue() == value) return false; // box
+                if (r != row && c != col && board[r][c].hasDigit() && board[r][c].getValue() == value) return false;
             }
         }
 
