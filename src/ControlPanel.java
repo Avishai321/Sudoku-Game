@@ -90,6 +90,7 @@ public class ControlPanel extends JPanel {
         moves = 0;
         updateMovesLabel();
         startTime = LocalTime.now();
+        timeLabel.setText("00:00");
     }
 
     public void setAutoSolveCallable(Runnable autoSolveCallable) {
