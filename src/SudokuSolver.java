@@ -130,6 +130,7 @@ public class SudokuSolver implements TileChangeListener {
                 if (!tile.isHint()) tile.setValue(0);
             }
         }
+        resetStatistics();
     }
 
     // removes or gives focus for all editable tiles
