@@ -40,14 +40,11 @@ public class SudokuSolver implements TileChangeListener {
         }
     }
 
-    // recursive method that fills the board with hints while keeping it valid
     public boolean fillBoard(int row, int col) {
-        // if row got to 9, it means the board has been filled and valid, it's a win
         if (row == 9) return true;
 
         Tile tile = board[row][col];
 
-        // simple int array with digits to try
         int[] digits = {1, 2, 3, 4, 5, 6, 7, 8, 9};
         shuffleArray(digits);
 
@@ -55,24 +52,19 @@ public class SudokuSolver implements TileChangeListener {
             int value = digits[i];
 
             if (isValidMove(row, col, value)) {
-                // the move is valid, assign the digit to the tile and send the next tile
                 tile.setValue(value);
 
-                // calculate the next tile's row and col
                 int nextRow = (col == 8) ? row + 1 : row;
                 int nextCol = (col == 8) ? 0 : col + 1;
 
-                // send the next tile and capture its answer
                 boolean hasSolution = fillBoard(nextRow, nextCol);
 
-                // if the next tile returns a positive answer, we can send it back up
                 if (hasSolution) return true;
             }
 
             tile.setValue(0);
         }
 
-        // couldn't place ANY digit without currpting the board, return a negative answer
         return false;
     }
 
@@ -86,7 +78,6 @@ public class SudokuSolver implements TileChangeListener {
         }
     }
 
-    // check if a move is safe BEFORE changing the tile's value
     public boolean isValidMove(int row, int col, int value) {
         for (int i = 0; i < 9; i++) {
             if (i != col && board[row][i].hasDigit() && board[row][i].getValue() == value) return false; // row
@@ -106,6 +97,7 @@ public class SudokuSolver implements TileChangeListener {
     }
 
     // get the next editable tile by the current one (null to start from 0,0), returns null if no nextEditable found
+    //TODO build simple array with editables indexes when removing hints instead of checking it this way
     public Tile getNextEditable(Tile currentTile) {
         int row = (currentTile == null) ?
                 0 : (currentTile.getCol() == 8) ? currentTile.getRow() + 1 : currentTile.getRow();
@@ -123,7 +115,6 @@ public class SudokuSolver implements TileChangeListener {
         return null;
     }
 
-    // set all editable tiles values to 0 (empty)
     public void resetBoard() {
         for (Tile[] tiles : board) {
             for (Tile tile : tiles) {
@@ -133,7 +124,6 @@ public class SudokuSolver implements TileChangeListener {
         resetStatistics();
     }
 
-    // removes or gives focus for all editable tiles
     public void setTilesFocusable(boolean focusable) {
         for (Tile[] tiles : board) {
             for (Tile tile : tiles) {
@@ -182,12 +172,9 @@ public class SudokuSolver implements TileChangeListener {
         }).start();
     }
 
-    // another recursive method, it updates the possibleSolutions variable
     public void updateSolutions(int row, int col, int maxSolutionsToFind) {
-        // stop early if enough solutions already found
         if (possibleSolutions >= maxSolutionsToFind) return;
 
-        // if row got to 9, the board finished and valid, then it's a possibleSolution
         if (row == 9) {
             possibleSolutions++;
             return;
@@ -198,25 +185,20 @@ public class SudokuSolver implements TileChangeListener {
 
         Tile currentTile = board[row][col];
 
-        if (currentTile.isHint()) { // skip the tile if it's a hint and move to the next one
+        if (currentTile.isHint()) {
             updateSolutions(nextRow, nextCol, maxSolutionsToFind);
             return;
         }
 
-        // try digits 1-9
         for (int val = 1; val <= 9; val++) {
             if (isValidMove(row, col, val)) {
-                // it's a valid move, use it and move forward to the next tile
                 currentTile.setValue(val);
-
                 updateSolutions(nextRow, nextCol, maxSolutionsToFind);
-
-                currentTile.setValue(0); // reset the value back to leave the board clean
+                currentTile.setValue(0);
             }
         }
     }
 
-    // removes random hints from the board while making sure there is only one solution
     public void removeHints() {
         for (int i = 0; i < 81; i++) {randomHints[i] = i;}
         shuffleArray(randomHints);
@@ -225,10 +207,9 @@ public class SudokuSolver implements TileChangeListener {
         int randomHintIndex = 0;
 
         while (currentHints > hints) {
-            // in case there are no more random indexes to remove AND keep the board valid
             if (randomHintIndex >= randomHints.length) break;
 
-            int index = randomHints[randomHintIndex++]; // assuming randomHints is shuffeled
+            int index = randomHints[randomHintIndex++];
             int row = index / 9;
             int col = index % 9;
 
@@ -236,7 +217,7 @@ public class SudokuSolver implements TileChangeListener {
             int value = tile.getValue();
 
             tile.setHint(false);
-            tile.setValue(0); // removes it's value
+            tile.setValue(0);
 
             possibleSolutions = 0;
             updateSolutions(0, 0, 2);
@@ -261,7 +242,6 @@ public class SudokuSolver implements TileChangeListener {
         return true;
     }
 
-    // updates collision for one tile's row, col and box
     public void updateCollisions(Tile tile) {
         int val = tile.getValue();
 
