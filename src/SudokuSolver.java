@@ -97,7 +97,7 @@ public class SudokuSolver implements TileChangeListener {
     }
 
     // get the next editable tile by the current one (null to start from 0,0), returns null if no nextEditable found
-    //TODO build simple array with editables indexes when removing hints instead of checking it this way
+    //TODO build simple array with editable indexes when removing hints instead of checking it this way
     public Tile getNextEditable(Tile currentTile) {
         int row = (currentTile == null) ?
                 0 : (currentTile.getCol() == 8) ? currentTile.getRow() + 1 : currentTile.getRow();
